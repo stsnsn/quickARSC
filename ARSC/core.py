@@ -1,0 +1,88 @@
+# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+__author__ = 'Satoshi_Nishino'
+__email__ = 'satoshi-nishino@g.ecc.u-tokyo.ac.jp'
+
+
+"""
+This script was created by removing unnecessary parts from the script provided in the following paper
+    and by adding components such as S-ARSC or AvgResMW, as well as incorporating the multiprocessing module.
+    Mende et al., Nature Microbiology, 2017 https://doi.org/10.1038/s41564-017-0008-3
+
+Original citations for calculation metrics:
+    Baudouin-Cornu P, Surdin-Kerjan Y, Marliere P, Thomas D. 2001. Molecular evolution of protein atomic composition. Science 293 297–300.
+    Wright F. 1990. The 'effective number of codons' used in a gene. Gene 87 23-29.
+"""
+
+
+import os
+from Bio import SeqIO
+
+# Amino acid dictionary
+# -----------------------
+aa_dictionary = {
+    'K': {'N': 1, 'S': 0, 'MW': 146.1882, 'C': 4},
+    'R': {'N': 3, 'S': 0, 'MW': 174.2017, 'C': 4},
+    'H': {'N': 2, 'S': 0, 'MW': 155.1552, 'C': 4},
+    'D': {'N': 0, 'S': 0, 'MW': 133.1032, 'C': 2},
+    'E': {'N': 0, 'S': 0, 'MW': 147.1299, 'C': 3},
+    'N': {'N': 1, 'S': 0, 'MW': 132.1184, 'C': 2},
+    'Q': {'N': 1, 'S': 0, 'MW': 146.1451, 'C': 3},
+    'S': {'N': 0, 'S': 0, 'MW': 105.0930, 'C': 1},
+    'T': {'N': 0, 'S': 0, 'MW': 119.1197, 'C': 2},
+    'Y': {'N': 0, 'S': 0, 'MW': 181.1894, 'C': 7},
+    'A': {'N': 0, 'S': 0, 'MW': 89.0935,  'C': 1},
+    'V': {'N': 0, 'S': 0, 'MW': 117.1469, 'C': 3},
+    'L': {'N': 0, 'S': 0, 'MW': 131.1736, 'C': 4},
+    'I': {'N': 0, 'S': 0, 'MW': 131.1736, 'C': 4},
+    'P': {'N': 0, 'S': 0, 'MW': 115.1310, 'C': 3},
+    'F': {'N': 0, 'S': 0, 'MW': 165.1900, 'C': 7},
+    'M': {'N': 0, 'S': 1, 'MW': 149.2124, 'C': 3},
+    'W': {'N': 1, 'S': 0, 'MW': 204.2262, 'C': 9},
+    'G': {'N': 0, 'S': 0, 'MW': 75.0669,  'C': 0},
+    'C': {'N': 0, 'S': 1, 'MW': 121.1590, 'C': 1},
+    'U': {'N': 0, 'S': 0, 'MW': 168.07,   'C': 1},
+    'J': {'N': 0, 'S': 0, 'MW': 131.1736, 'C': 4},
+    'B': {'N': 0.5, 'S': 0, 'MW': 132.6108, 'C': 2},
+    'Z': {'N': 0.5, 'S': 0, 'MW': 146.6375, 'C': 3}
+}
+
+# Compute ARSCs (N/C/S/MW)
+# -----------------------
+def compute_ARSC_extended(seq, aa_dict=aa_dictionary):
+    seq = seq.replace("*", "")
+    L = len(seq)
+    if L == 0:
+        return (None, None, None, None)
+
+    total_N = total_C = total_S = total_MW = 0
+
+    for aa in seq:
+        if aa in aa_dict:
+            info = aa_dict[aa]
+            total_N  += info["N"]
+            total_C  += info["C"]
+            total_S  += info["S"]
+            total_MW += info["MW"]
+
+    return (
+        total_N  / L,
+        total_C  / L,
+        total_S  / L,
+        total_MW / L
+    )
+
+
+# Process a .faa file
+# -----------------------
+def process_faa(faa_path):
+    genome_name = os.path.basename(faa_path).replace(".faa", "")
+
+    full_seq = ""
+
+    for record in SeqIO.parse(faa_path, "fasta"):
+        full_seq += str(record.seq)
+
+    N_ARSC, C_ARSC, S_ARSC, MW_ARSC = compute_ARSC_extended(full_seq, aa_dictionary)
+
+    return (genome_name, N_ARSC, C_ARSC, S_ARSC, MW_ARSC)
