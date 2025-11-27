@@ -7,7 +7,7 @@ setup(
     install_requires=["biopython>=1.79"],
     entry_points={
         "console_scripts": [
-            "ARSC=scripts.ARSC:main",
+            "ARSC=ARSC.main:main",
         ],
     },
     author="Satoshi Nishino",
