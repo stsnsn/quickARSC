@@ -42,17 +42,17 @@ ARSC -i <input> -o <output.tsv> -t <num_threads>
 
 
 ### Example
-#### 1. Calculate ARSC from a `.faa` file and save result as `ARSC_output.tsv`.
+#### 1. Run ARSC on a `.faa` file.
 ```bash
-ARSC -i E_coli.faa -o ARSC_output.tsv
+ARSC -i E_coli.faa
 ```
 
-#### 2. Calculate ARSC for all .faa / .faa.gz files in a directory using 4 threads
+#### 2. Process all `.faa` / `.faa.gz` files in a directory using 4 threads and save results as `ARSC_output.tsv`
 ```bash
-ARSC -i input_dir/ -t 4
+ARSC -i input_dir/ -t 4 -o ARSC_output.tsv
 ```
 
-#### 3. Sort the result by N-ARSC.
+#### 3. Sort results by N-ARSC (descending) using pipe.
 ```bash
 ARSC -i input_dir/ -t 4 | sort -k2,2nr
 ```
@@ -70,7 +70,7 @@ Format columns: Genome, N_ARSC, C_ARSC, S_ARSC, AvgResMW <br>
 - N-ARSC — Average number of nitrogen atoms per amino-acid residue side chain.
 - C-ARSC — Average number of carbon atoms per amino-acid residue side chain.
 - S-ARSC — Average number of sulfur atoms per amino-acid residue side chain.
-- AvgResMW — Average molecular weight of amino-acid residue side chains.
+- AvgResMW — Average molecular weight of amino-acid residues.
 
 ### Dependencies
 - Python >= 3.8
