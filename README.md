@@ -2,12 +2,15 @@
 
 [![PyPI version](https://badge.fury.io/py/arsc.svg)](https://badge.fury.io/py/arsc)
 
-ARSC (Amino-acid Residue Stoichiometric Constraints) is a lightweight tool to compute
-**N-ARSC**, **C-ARSC**, **S-ARSC**, and **AvgResMW** from genomic protein FASTA files.
+**ARSC** (**A**mino-acid **R**esidue **S**toichiometry **C**alculator) is a lightweight command-line tool for quantifying elemental stoichiometry from protein FASTA files. It calculates the number of nitrogen (N), carbon (C), and sulfur (S) atoms contained in amino-acid side chains across all proteins, and also derives the average molecular weight of residues (AvgResMW). The tool is designed for fast batch processing and supports multiprocessing.
+
+- **N-ARSC**: Average number of nitrogen atoms per amino-acid residue side chain.
+- **C-ARSC**: Average number of carbon atoms per amino-acid residue side chain.
+- **S-ARSC**: Average number of sulfur atoms per amino-acid residue side chain.
+- AvgResMW: Average molecular weight of amino-acid residue side chains.
 
 These metrics follow the definitions used in
 Mende et al., *Nature Microbiology*, (2017). https://doi.org/10.1038/s41564-017-0008-3
-
 
 ---
 
