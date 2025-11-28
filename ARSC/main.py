@@ -5,11 +5,10 @@ __email__ = 'satoshi-nishino@g.ecc.u-tokyo.ac.jp'
 
 
 """
-This script was created by removing unnecessary parts from the script provided in the following paper
-    and by adding components such as S-ARSC or AvgResMW, as well as incorporating the multiprocessing module.
+This script was created to compute the N/C-ARSC metrics as described in the following publication:
     Mende et al., Nature Microbiology, 2017 https://doi.org/10.1038/s41564-017-0008-3
 
-Original citations for calculation metrics:
+Original citations for calculation metrics in Mende et al. 2017:
     Baudouin-Cornu P, Surdin-Kerjan Y, Marliere P, Thomas D. 2001. Molecular evolution of protein atomic composition. Science 293 297–300.
     Wright F. 1990. The 'effective number of codons' used in a gene. Gene 87 23-29.
 """
