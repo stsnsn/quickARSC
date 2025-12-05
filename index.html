@@ -63,6 +63,10 @@
 		</div>
 
 		<section class="controls" aria-label="filters">
+			<!-- loading indicator shown while TSV is fetched -->
+			<div id="loading" role="status" aria-live="polite" style="display:none; margin-bottom:8px;">
+				Loading data…
+			</div>
 			<div class="control"><label>domain
 				<input list="domainList" id="domainSearch" placeholder="search..." />
 				<datalist id="domainList"></datalist>

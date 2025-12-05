@@ -28,6 +28,9 @@ if (markerAlphaInput && markerAlphaVal) {
 	});
 }
 
+// loading indicator element (shown during initial TSV fetch)
+const loadingEl = document.getElementById('loading');
+
 // wire up marker size display and input
 if (markerSizeInput && markerSizeVal) {
 	markerSizeVal.textContent = markerSizeInput.value;
@@ -321,27 +324,32 @@ function update() {
 			});
 
 			// Fetch TSV and initialize
-			fetch(TSV_PATH).then(r => {
-				if (!r.ok) throw new Error('Failed to fetch TSV: ' + r.status);
-				return r.text();
-			}).then(text => {
-				const parsed = parseTSV(text);
-				header = parsed.header;
-				rows = parsed.data;
-				// initial population: set full option lists
-				LEVELS.forEach(l => {
-					const set = new Set(rows.map(r => r[l]).filter(Boolean));
-					const arr = Array.from(set).sort();
-					// populate datalist for the search input
-					setSelectOptions(selects[l], arr);
-				});
-				// ensure child options reflect any top-level defaults (none at start)
-				refreshAllOptions();
-				update();
-			}).catch(err => {
-				document.getElementById('plot').textContent = 'Error loading data: ' + err.message;
-				console.error(err);
-			});
+						try {
+							if (loadingEl) loadingEl.style.display = 'inline-block';
+						} catch (e) { /* ignore */ }
+						fetch(TSV_PATH).then(r => {
+							if (!r.ok) throw new Error('Failed to fetch TSV: ' + r.status);
+							return r.text();
+						}).then(text => {
+							const parsed = parseTSV(text);
+							header = parsed.header;
+							rows = parsed.data;
+							// initial population: set full option lists
+							LEVELS.forEach(l => {
+								const set = new Set(rows.map(r => r[l]).filter(Boolean));
+								const arr = Array.from(set).sort();
+								// populate datalist for the search input
+								setSelectOptions(selects[l], arr);
+							});
+							// ensure child options reflect any top-level defaults (none at start)
+							refreshAllOptions();
+							update();
+							if (loadingEl) loadingEl.style.display = 'none';
+						}).catch(err => {
+							if (loadingEl) loadingEl.style.display = 'none';
+							document.getElementById('plot').textContent = 'Error loading data: ' + err.message;
+							console.error(err);
+						});
 
 			// Build TSV string from filtered rows using header order
 			function buildTSVFromRows(filteredRows) {
