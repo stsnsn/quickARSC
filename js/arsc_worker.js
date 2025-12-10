@@ -58,12 +58,14 @@ function parseFASTAandComputeFast(text) {
     if (isHeader) continue;
     if (code === 62) { isHeader = true; continue; } // '>'
 
-  // 制御文字や空白、数字などはスキップ
-  if (code < 65) continue;
+    // ASCII 範囲外の文字コードは無視
+    if (code > 127) continue;
+    // 制御文字や空白、数字なども無視
+    if (code < 65) continue;
 
-  // count this as a valid (non-control, non-header) character for nucleotide detection
-  validCharCount++;
-  if (TABLE_IS_NUC[code] === 1) nucleotideMatchCount++;
+    // count this as a valid (non-control, non-header) character for nucleotide detection
+    validCharCount++;
+    if (TABLE_IS_NUC[code] === 1) nucleotideMatchCount++;
 
     const n = TABLE_N[code];
     if (n !== -1) {
