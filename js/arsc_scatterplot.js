@@ -30,6 +30,176 @@ if (markerAlphaInput && markerAlphaVal) {
 
 // loading indicator element (shown during initial TSV fetch)
 const loadingEl = document.getElementById('loading');
+// file input for user FASTA
+let fastaFileInput = document.getElementById('fastaFile');
+let fastaNameSpan = document.getElementById('fastaName');
+const fastaContainer = document.getElementById('fastaFile') ? document.getElementById('fastaFile').closest('div') : null;
+const origFastaContainerHTML = fastaContainer ? fastaContainer.innerHTML : null;
+let parseWorker = null;
+let userSample = null; // stores last computed FASTA result { filename, N_ARSC, C_ARSC, S_ARSC }
+
+function bindFastaElements() {
+	// re-query elements (useful after replacing container innerHTML)
+	fastaFileInput = document.getElementById('fastaFile');
+	fastaNameSpan = document.getElementById('fastaName');
+	if (!fastaFileInput) return;
+	// remove previous listeners by cloning
+	const old = fastaFileInput;
+	const newInput = old.cloneNode(true);
+	old.parentNode.replaceChild(newInput, old);
+	fastaFileInput = newInput;
+	fastaFileInput.addEventListener('change', handleFastaFileChange);
+}
+
+function showUserSampleInfo() {
+	if (!fastaContainer || !userSample) return;
+	let txt = `file: ${userSample.filename}; N-ARSC: ${userSample.N_ARSC.toFixed(5)}; C-ARSC: ${userSample.C_ARSC.toFixed(5)}; S-ARSC: ${userSample.S_ARSC.toFixed(5)}`;
+	let html = `<div style="font-size:0.95rem;color:#222;">${txt}</div>`;
+	if (userSample.warning) {
+		html += `<div style="color:#b33;margin-top:6px;font-size:0.85rem;">⚠ ${userSample.warning.message}</div>`;
+	}
+	fastaContainer.innerHTML = html;
+}
+
+function restoreFastaContainer() {
+	if (!fastaContainer || !origFastaContainerHTML) return;
+	fastaContainer.innerHTML = origFastaContainerHTML;
+	bindFastaElements();
+}
+
+// helper to add/remove previous user-sample overlay
+function removeUserSampleOverlay() {
+	// remove traces named 'user-sample' and annotations with user-sample id
+	try {
+		const gd = document.getElementById('plot');
+		if (!gd || !gd.data) return;
+		const tracesToRemove = [];
+		gd.data.forEach((t, idx) => { if (t && t.name === 'user-sample') tracesToRemove.push(idx); });
+		// remove from last to first to keep indices valid
+		for (let i = tracesToRemove.length - 1; i >= 0; i--) {
+			Plotly.deleteTraces(gd, tracesToRemove[i]);
+		}
+		// remove annotations added with uid 'user-sample-annotation'
+		const layout = gd.layout || {};
+		if (layout.annotations) {
+			const kept = layout.annotations.filter(a => !(a && a._userSample));
+			Plotly.relayout(gd, { annotations: kept });
+		}
+			// remove shapes (lines) added for user-sample
+			if (layout.shapes) {
+				const keptShapes = layout.shapes.filter(s => !(s && s._userSample));
+				Plotly.relayout(gd, { shapes: keptShapes });
+			}
+	} catch (e) { console.warn(e); }
+}
+
+// add overlay (horizontal dashed line + annotation) for currently stored userSample
+function addUserSampleOverlay() {
+	if (!userSample) return;
+	try {
+		const gd = document.getElementById('plot');
+		if (!gd) return;
+		const yFieldCur = (ySelect && ySelect.value) ? ySelect.value : 'N_ARSC';
+		const yValCur = (userSample && userSample[yFieldCur] !== undefined) ? userSample[yFieldCur] : userSample.N_ARSC;
+		const existingShapes = (gd.layout && gd.layout.shapes) ? gd.layout.shapes.slice() : [];
+		const line = { type: 'line', xref: 'paper', x0: 0, x1: 1, yref: 'y', y0: yValCur, y1: yValCur, line: { color: 'red', width: 2, dash: 'dot' }, _userSample: true };
+		Plotly.relayout('plot', { shapes: existingShapes.concat([line]) });
+		const existingAnns = (gd.layout && gd.layout.annotations) ? gd.layout.annotations.slice() : [];
+		const ann = { xref: 'paper', x: 0.99, xanchor: 'right', yref: 'y', y: yValCur, text: `${userSample.filename} — ${yFieldCur}: ${yValCur.toFixed(5)}`, bgcolor: '#fff8', bordercolor: '#ff3333', font: { color: '#800', size: 12 }, _userSample: true };
+		Plotly.relayout('plot', { annotations: existingAnns.concat([ann]) });
+	} catch (e) { console.warn(e); }
+}
+
+// handle file selection
+function handleFastaFileChange(ev) {
+	const f = ev.target.files && ev.target.files[0];
+	if (!f) return;
+
+	// validate extension early to avoid unnecessary parsing
+	const allowedExts = ['.fa', '.faa', '.fasta'];
+	const nameLower = (f.name || '').toLowerCase();
+	if (!allowedExts.some(ext => nameLower.endsWith(ext))) {
+		try { alert('Unsupported file type. Please upload a .fa, .faa or .fasta file.'); } catch (e) {}
+		// clear input so user can try again
+		if (fastaFileInput) { try { fastaFileInput.value = ''; } catch (e) {} }
+		if (fastaNameSpan) fastaNameSpan.textContent = '';
+		return;
+	}
+	if (fastaNameSpan) fastaNameSpan.textContent = `${f.name} (${(f.size/1024).toFixed(1)} KB)`;
+	const MAX_BYTES = 10 * 1024 * 1024; // 10MB
+	if (f.size > MAX_BYTES) {
+		const ok = confirm('File seems large (>10MB). Continue parsing in browser? Recommended: use smaller file. Continue?');
+		if (!ok) return;
+	}
+	// read as text and spawn worker
+	const reader = new FileReader();
+	reader.onload = function(e) {
+		const text = e.target.result;
+		// start worker
+		if (parseWorker) {
+			parseWorker.terminate();
+			parseWorker = null;
+		}
+		parseWorker = new Worker('js/arsc_worker.js');
+		if (loadingEl) { loadingEl.style.display = 'inline-block'; loadingEl.textContent = 'Parsing FASTA...'; }
+		parseWorker.onmessage = function(me) {
+			const m = me.data;
+			if (!m || !m.type) return;
+			if (m.type === 'result') {
+				if (loadingEl) loadingEl.style.display = 'none';
+				// Handle warnings from worker: strong check for nucleotide-like input
+				if (m.warning && m.warning.type === 'nucleotide_detected') {
+					// prompt user: proceed or cancel
+					let proceed = false;
+					try {
+						proceed = confirm(
+							"⚠️ Warning: Uploaded sequence looks like DNA/RNA (mostly A/T/G/C/U/N). Results may be incorrect.\n" +
+							"Do you want to continue? (OK = continue, Cancel = cancel)"
+						);
+					} catch (e) { proceed = false; }
+					if (!proceed) {
+						// user cancelled: stop processing and reset file input
+						if (loadingEl) loadingEl.style.display = 'none';
+						try { parseWorker.terminate(); } catch (e) {}
+						parseWorker = null;
+						if (fastaFileInput) { try { fastaFileInput.value = ''; } catch (e) {} }
+						if (fastaNameSpan) fastaNameSpan.textContent = '';
+						// leave userSample unchanged (do not store)
+						return;
+					}
+				}
+				// store the computed sample so it persists across plot redraws
+				userSample = {
+					filename: m.filename || 'uploaded',
+					N_ARSC: typeof m.N_ARSC === 'number' ? m.N_ARSC : parseFloat(m.N_ARSC),
+					C_ARSC: typeof m.C_ARSC === 'number' ? m.C_ARSC : parseFloat(m.C_ARSC),
+					S_ARSC: typeof m.S_ARSC === 'number' ? m.S_ARSC : parseFloat(m.S_ARSC),
+					warning: m.warning || null
+				};
+				// for non-nucleotide warnings (unknown residues), show a note
+				if (m.warning && m.warning.type === 'unknown_residues') {
+					try { alert(`Warning: ${m.warning.message}`); } catch (e) {}
+				}
+				// replace the input UI with summary info
+				showUserSampleInfo();
+				// update the plot (drawPlot will re-apply overlays)
+				try { update(); } catch (err) { /* ignore */ }
+				// terminate worker
+				parseWorker.terminate(); parseWorker = null;
+			} else if (m.type === 'error') {
+				if (loadingEl) loadingEl.style.display = 'none';
+				alert('Error parsing FASTA: ' + m.message);
+				parseWorker.terminate(); parseWorker = null;
+			}
+		};
+		parseWorker.postMessage({ type: 'parse', text, filename: f.name });
+	};
+	reader.onerror = function(err) { alert('Failed to read file: ' + err); };
+	reader.readAsText(f);
+}
+
+// bind elements initially
+bindFastaElements();
 
 // wire up marker size display and input
 if (markerSizeInput && markerSizeVal) {
@@ -169,6 +339,8 @@ function getFilters() {
 					};
 
 				Plotly.newPlot('plot', traces, layout, {responsive: true});
+				// if a user sample exists, re-apply its overlay after the main plot redraw
+				if (userSample) addUserSampleOverlay();
 			}
 
 // Update routine: get filters, filter rows, draw
@@ -320,6 +492,13 @@ function update() {
 				if (markerSizeVal) { markerSizeVal.textContent = markerSizeInput ? markerSizeInput.value : '8'; }
 				if (markerAlphaInput) { markerAlphaInput.value = 1.0; }
 				if (markerAlphaVal) { markerAlphaVal.textContent = markerAlphaInput ? parseFloat(markerAlphaInput.value).toFixed(2) : '1.00'; }
+				// clear stored user sample and input UI as part of reset
+				userSample = null;
+				removeUserSampleOverlay();
+				// restore the original upload UI and clear any displayed filename/text
+				restoreFastaContainer();
+				if (fastaFileInput) { try { fastaFileInput.value = ''; } catch (e) {} }
+				if (fastaNameSpan) fastaNameSpan.textContent = '';
 				update();
 			});
 
