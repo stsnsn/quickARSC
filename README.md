@@ -41,7 +41,7 @@ astur -i <input> -o <output.tsv> -t <num_threads>
 - `-v` or `--version` : show version
 - `-h` or `--help`    : show help message
 
-- `-i` : input file/directory path
+- `-i` : input file/directory path（`astur <input>` == `astur -i <input>` ）
 - `-o` : output TSV file name (optional)
 - `-t` : number of threads (default: 1)
 
@@ -49,12 +49,12 @@ astur -i <input> -o <output.tsv> -t <num_threads>
 ### Example
 #### 1. Compute ARSC on a `.faa` file.
 ```bash
-astur -i E_coli.faa
+astur E_coli.faa
 ```
 
 #### 2. Process all `.faa` / `.faa.gz` files in a directory using 4 threads and save results as `ARSC_output.tsv`
 ```bash
-astur -i input_dir/ -t 4 -o ARSC_output.tsv
+astur input_dir/ -t 4 -o ARSC_output.tsv
 ```
 
 #### 3. Sort results by N-ARSC (descending) using pipe.
@@ -64,7 +64,7 @@ astur -i input_dir/ -t 4 | sort -k2,2nr
 
 ### Input requirements
 
-- Input directory must contain one or more amino-acid sequence fasta (`*.faa` or `*.faa.gz`) files
+- Input directory must contain one or more amino-acid fasta (`*.faa` or `*.faa.gz`) files
 
 ### Output
 
@@ -75,7 +75,7 @@ Format columns: File, N_ARSC, C_ARSC, S_ARSC, AvgResMW <br>
 - N-ARSC — Average number of nitrogen atoms per amino-acid residue side chain.
 - C-ARSC — Average number of carbon atoms per amino-acid residue side chain.
 - S-ARSC — Average number of sulfur atoms per amino-acid residue side chain.
-- AvgResMW — Average molecular weight of amino-acid residues.
+- AvgResMW — Average molecular weight of amino-acid residues (not only side chain!).
 
 ### Dependencies
 - Python >= 3.8

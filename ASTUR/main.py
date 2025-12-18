@@ -64,12 +64,21 @@ class CustomFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaultsHe
 def main():
     parser = argparse.ArgumentParser(description=f"{ASTUR_LOGO}\n\nCompute ARSC from .faa/.faa.gz files", formatter_class=CustomFormatter)
     parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
-    parser.add_argument("-i", "--input_dir", required=True, help="A faa or faa.gz file, or directory")
+    parser.add_argument("-i", "--input_dir", required=False, help="A faa or faa.gz file, or directory")
+    parser.add_argument("input", nargs="?", help="Positional input: .faa/.faa.gz file or directory")
     parser.add_argument("-o", "--output", help="Output TSV file w/ header (optional). If omitted, print to stdout w/o header.")
     parser.add_argument("-t", "--threads", default=1, type=int, help="Number of threads")
 
 
     args = parser.parse_args()
+
+    # Allow either flag (-i/--input_dir) or positional input (not both)
+    if args.input_dir is not None and args.input is not None:
+        parser.error("cannot specify both positional input and -i/--input_dir; use one or the other")
+    if args.input_dir is None and args.input is not None:
+        args.input_dir = args.input
+    if args.input_dir is None:
+        parser.error("missing input: provide a .faa/.faa.gz file or directory")
 
 
     try:
