@@ -1,10 +1,10 @@
 # ASTUR
 
-[![PyPI version](https://badge.fury.io/py/arsc.svg)](https://badge.fury.io/py/astur)
+[![PyPI version](https://badge.fury.io/py/astur.svg)](https://badge.fury.io/py/astur)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17745555.svg)](https://doi.org/10.5281/zenodo.17745555)
 
 
-**ASTUR** (**A**RSC-based **ST**oichiometric **U**tility for **R**esource profiling) is a lightweight command-line tool and [a web interface](https://stsnsn.github.io/ASTUR/) for quantifying elemental stoichiometry from protein FASTA files. It calculates the number of nitrogen (N), carbon (C), and sulfur (S) atoms contained in amino-acid side chains across proteins or proteomes.
+**ASTUR** (**A**RSC-based **ST**oichiometric **U**tility for **R**esource profiling) is [a lightweight command-line tool](https://pypi.org/project/astur/)and [a web interface](https://stsnsn.github.io/ASTUR/) for quantifying elemental stoichiometry from protein FASTA files. It calculates the number of nitrogen (N), carbon (C), and sulfur (S) atoms contained in amino-acid side chains across proteins or proteomes.
 
 
 
@@ -35,7 +35,7 @@ pip install astur
 ## Usage
 
 ```bash
-ASTUR -i <input> -o <output.tsv> -t <num_threads>
+astur -i <input> -o <output.tsv> -t <num_threads>
 ```
 
 - `-v` or `--version` : show version
@@ -49,17 +49,17 @@ ASTUR -i <input> -o <output.tsv> -t <num_threads>
 ### Example
 #### 1. Compute ARSC on a `.faa` file.
 ```bash
-ASTUR -i E_coli.faa
+astur -i E_coli.faa
 ```
 
 #### 2. Process all `.faa` / `.faa.gz` files in a directory using 4 threads and save results as `ARSC_output.tsv`
 ```bash
-ASTUR -i input_dir/ -t 4 -o ARSC_output.tsv
+astur -i input_dir/ -t 4 -o ARSC_output.tsv
 ```
 
 #### 3. Sort results by N-ARSC (descending) using pipe.
 ```bash
-ASTUR -i input_dir/ -t 4 | sort -k2,2nr
+astur -i input_dir/ -t 4 | sort -k2,2nr
 ```
 
 ### Input requirements
