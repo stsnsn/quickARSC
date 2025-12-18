@@ -338,16 +338,17 @@ function getFilters() {
 				// place legend horizontally centered below the plot area
 				legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.18 },
 				// increase bottom margin so the legend has space
-				margin: { t: 80, b: 110 }
-			};
+			margin: { t: 80, b: 110 }
+		};
 
-			Plotly.newPlot('plot', traces, layout, {responsive: true});
-			
-			// if a user sample exists, re-apply its overlay after the main plot redraw
-			if (userSample) addUserSampleOverlay();
-		}
-
-// Show modal with copyable data
+		Plotly.newPlot('plot', traces, layout, {responsive: true});
+		
+		// Re-attach click handler after plot recreation
+		setupPlotClickHandler();
+		
+		// if a user sample exists, re-apply its overlay after the main plot redraw
+		if (userSample) addUserSampleOverlay();
+	}// Show modal with copyable data
 function showDataModal(row, xField, yField) {
 	// Build formatted text content
 	const taxLevels = ['domain', 'phylum', 'class', 'order', 'family', 'genus'];
