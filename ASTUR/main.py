@@ -13,23 +13,48 @@ Original citations for calculation metrics in Mende et al. 2017:
     Wright F. 1990. The 'effective number of codons' used in a gene. Gene 87 23-29.
 """
 
-# USAGE: python ARSC.py -i <protein file (faa) or directory> -o <TSV name (optional)> -t <num_threads>
-# e.g., python ARSC.py -i protein_faa/ -o ARSC.tsv -t 4
-
 import sys
 import argparse
 from multiprocessing import Pool
-from ARSC import __version__
-from ARSC.utils import collect_faa_files, process_faa_auto
+from ASTUR import __version__
+from ASTUR.utils import collect_faa_files, process_faa_auto
 
 
-ARSC_LOGO = """
- .d8b.  d8888b. .d8888.  .o88b. 
-d8' `8b 88  `8D 88'  YP d8P  Y8 
-88ooo88 88oobY' `8bo.   8P      
-88~~~88 88`8b     `Y8b. 8b      
-88  `88 88 `88. db  `8D Y8b  d8 
-YP  `YP 88  `YD `8888Y'  `Y88P' 
+ASTUR_LOGO = """
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;+;;xx+X;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;xX+xxxxxX++;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;xxxXXXXxXX+;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;+XXXXXXXxxX+;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;XXXXXXXXXx;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;xXXXXXXXXXx;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;xXXXXXXXXXX+;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;xXXXXXXXXXXx;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;+XXXXXXXXXXX+;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;xXXXXXXXXXXX+;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;xXXXXXXXXXXX+;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;+XXXXXXXXXXXx;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;+++;+XXXXXXXXXXXx;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;xXXXXXXXXXXXXXXXXx;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;xXXXXXXXXXXXX+;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;+XXXXXXXXXXXXXXXXXXXx;;;;;;;;
+;;;;;;;;;;;;;;;;;;;+xXXXXXXXXXXXXXXXXXXXXx;;;;;;;;
+;;;;;;;;;;;;;;;;;;xXXXXXXXXXXXXXXXXXXXXXXx;;;;;;;;
+;;;;;;;;;;;;;;;;+XXXXXXXXXXXXXx+XXXXXXXXx+;;;;;;;;
+;;;;;;;;;;;;;;+XXXXXXXXXXXXXXx;;xXXXXXXx+;;;;;;;;;
+;;;;;;;;;;;;+XXXXXXXXXXXXXXX+;;;;XXXxX;;;;;;;;;;;;
+;;;;;;;;;+xXXXXXXXXXXXXXXXx;;;;;;;+;;;;;;;;;;;;;;;
+;;;;;;;+XXXXXXXXXXXXXXXXx;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;++XXXXXXXXXXXXx+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;xxxxXXXXXXXx+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;xxXxXxX++;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;xx+X++;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ .d888888  .d88888b  d888888P dP     dP  888888ba 
+d8'    88  88.    "'    88    88     88  88    `8b
+88aaaaa88a `Y88888b.    88    88     88 a88aaaa8P'
+88     88        `8b    88    88     88  88   `8b.
+88     88  d8'   .8P    88    Y8.   .8P  88     88
+88     88   Y88888P     dP    `Y88888P'  dP     dP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 """
 
 class CustomFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaultsHelpFormatter):
@@ -37,7 +62,7 @@ class CustomFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaultsHe
 
 
 def main():
-    parser = argparse.ArgumentParser(description=f"{ARSC_LOGO}\n\nCompute ARSC from .faa/.faa.gz files", formatter_class=CustomFormatter)
+    parser = argparse.ArgumentParser(description=f"{ASTUR_LOGO}\n\nCompute ARSC from .faa/.faa.gz files", formatter_class=CustomFormatter)
     parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("-i", "--input_dir", required=True, help="A faa or faa.gz file, or directory")
     parser.add_argument("-o", "--output", help="Output TSV file w/ header (optional). If omitted, print to stdout w/o header.")
@@ -53,7 +78,7 @@ def main():
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
-    print(f"ARSC Version: {__version__}", file=sys.stderr)
+    print(f"ASTUR Version: {__version__}", file=sys.stderr)
     print(f"Found {len(items)} files to process.", file=sys.stderr)
     print(f"Using {args.threads} threads.", file=sys.stderr)
 

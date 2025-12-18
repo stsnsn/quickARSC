@@ -6,8 +6,7 @@
 const TABLE_N = new Int8Array(128).fill(-1);
 const TABLE_C = new Int8Array(128).fill(-1);
 const TABLE_S = new Int8Array(128).fill(-1);
-// table to quickly test whether a character is a nucleotide (A,T,G,C,U,N)
-const TABLE_IS_NUC = new Int8Array(128).fill(0);
+const TABLE_IS_NUC = new Int8Array(128).fill(0); // table to quickly test whether a character is a nucleotide (A,T,G,C,U,N)
 
 const RESIDUE_DATA = {
   A: { N:0, C:1, S:0 }, R: { N:3, C:4, S:0 }, N: { N:1, C:2, S:0 },

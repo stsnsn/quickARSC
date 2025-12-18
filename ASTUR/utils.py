@@ -12,7 +12,7 @@ This script was created to build a file processing utility for ARSC computations
 import os
 import re
 import gzip
-from ARSC.core import process_faa
+from ASTUR.core import process_faa
 
 # Remove extensions
 def get_genome_name(path):
