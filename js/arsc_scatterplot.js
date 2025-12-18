@@ -327,23 +327,184 @@ function getFilters() {
 						marker: { size: groups[k].size, sizemode: 'area', opacity: ((markerAlphaInput && markerAlphaInput.value) ? parseFloat(markerAlphaInput.value) : DEFAULT_OPACITY) }
 				}));
 
-						const layout = {
-						title: yField + ' vs ' + xField + ' (color: ' + groupingLevel + ')',
-						xaxis: { title: xField },
-						yaxis: { title: yField },
-						hovermode: 'closest',
-						// place legend horizontally centered below the plot area
-						legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.18 },
-						// increase bottom margin so the legend has space
-						margin: { t: 80, b: 110 }
-					};
+				const layout = {
+				title: yField + ' vs ' + xField + ' (color: ' + groupingLevel + ')',
+				xaxis: { title: xField },
+				yaxis: { title: yField },
+				hovermode: 'closest',
+				// place legend horizontally centered below the plot area
+				legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.18 },
+				// increase bottom margin so the legend has space
+				margin: { t: 80, b: 110 }
+			};
 
-				Plotly.newPlot('plot', traces, layout, {responsive: true});
-				// if a user sample exists, re-apply its overlay after the main plot redraw
-				if (userSample) addUserSampleOverlay();
-			}
+			Plotly.newPlot('plot', traces, layout, {responsive: true});
+			
+			// Add click event listener to show modal with copyable data
+			const plotDiv = document.getElementById('plot');
+			plotDiv.on('plotly_click', function(data) {
+				if (!data.points || data.points.length === 0) return;
+				const pt = data.points[0];
+				const pointIndex = pt.pointIndex;
+				const curveNumber = pt.curveNumber;
+				
+				// Get the original data row for this point
+				const filters = getFilters();
+				const filteredRows = filterData(rows, filters);
+				
+				// Find the corresponding row by matching x, y values
+				const xVal = pt.x;
+				const yVal = pt.y;
+				const matchedRow = filteredRows.find(r => 
+					Math.abs(r[xField] - xVal) < 0.0001 && 
+					Math.abs(r[yField] - yVal) < 0.0001
+				);
+				
+				if (matchedRow) {
+					showDataModal(matchedRow, xField, yField);
+				}
+			});
+			
+			// if a user sample exists, re-apply its overlay after the main plot redraw
+			if (userSample) addUserSampleOverlay();
+		}
 
-// Update routine: get filters, filter rows, draw
+// Show modal with copyable data
+function showDataModal(row, xField, yField) {
+	// Build formatted text content
+	const taxLevels = ['domain', 'phylum', 'class', 'order', 'family', 'genus'];
+	let text = '';
+	
+	if (row['id']) text += `ID: ${row['id']}\n`;
+	text += `\nTaxonomy:\n`;
+	taxLevels.forEach(level => {
+		if (row[level]) text += `  ${level}: ${row[level]}\n`;
+	});
+	
+	text += `\nARSC Values:\n`;
+	text += `  N-ARSC: ${row['N_ARSC']}\n`;
+	text += `  C-ARSC: ${row['C_ARSC']}\n`;
+	text += `  S-ARSC: ${row['S_ARSC']}\n`;
+	
+	text += `\nOther:\n`;
+	text += `  ${xField}: ${row[xField]}\n`;
+	if (row['AvgResMW']) text += `  AvgResMW: ${row['AvgResMW']}\n`;
+	if (row['sum_len']) text += `  sum_len: ${row['sum_len']}\n`;
+	
+	// Create modal
+	const modal = document.createElement('div');
+	modal.style.cssText = `
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0,0,0,0.5);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 10000;
+	`;
+	
+	const modalContent = document.createElement('div');
+	modalContent.style.cssText = `
+		background: white;
+		padding: 20px;
+		border-radius: 8px;
+		max-width: 500px;
+		width: 90%;
+		max-height: 80vh;
+		overflow: auto;
+		box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+	`;
+	
+	const title = document.createElement('h3');
+	title.textContent = 'Sample Data';
+	title.style.marginTop = '0';
+	
+	const textarea = document.createElement('textarea');
+	textarea.value = text;
+	textarea.style.cssText = `
+		width: 100%;
+		height: 300px;
+		font-family: monospace;
+		font-size: 13px;
+		padding: 10px;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		resize: vertical;
+		box-sizing: border-box;
+	`;
+	textarea.readOnly = true;
+	
+	const buttonContainer = document.createElement('div');
+	buttonContainer.style.cssText = `
+		margin-top: 15px;
+		display: flex;
+		gap: 10px;
+		justify-content: flex-end;
+	`;
+	
+	const copyBtn = document.createElement('button');
+	copyBtn.textContent = 'Copy';
+	copyBtn.style.cssText = `
+		padding: 8px 16px;
+		background: #007bff;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+	`;
+	copyBtn.onclick = () => {
+		textarea.select();
+		document.execCommand('copy');
+		copyBtn.textContent = 'Copied!';
+		setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+	};
+	
+	const closeBtn = document.createElement('button');
+	closeBtn.textContent = 'Close';
+	closeBtn.style.cssText = `
+		padding: 8px 16px;
+		background: #6c757d;
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+	`;
+	closeBtn.onclick = () => {
+		document.body.removeChild(modal);
+	};
+	
+	buttonContainer.appendChild(copyBtn);
+	buttonContainer.appendChild(closeBtn);
+	
+	modalContent.appendChild(title);
+	modalContent.appendChild(textarea);
+	modalContent.appendChild(buttonContainer);
+	modal.appendChild(modalContent);
+	
+	// Close on background click
+	modal.onclick = (e) => {
+		if (e.target === modal) {
+			document.body.removeChild(modal);
+		}
+	};
+	
+	// Close on Escape key
+	const escHandler = (e) => {
+		if (e.key === 'Escape') {
+			document.body.removeChild(modal);
+			document.removeEventListener('keydown', escHandler);
+		}
+	};
+	document.addEventListener('keydown', escHandler);
+	
+	document.body.appendChild(modal);
+	
+	// Auto-select text for easy copying
+	setTimeout(() => { textarea.select(); }, 100);
+}// Update routine: get filters, filter rows, draw
 function update() {
 	const filters = getFilters();
 	const filtered = filterData(rows, filters);

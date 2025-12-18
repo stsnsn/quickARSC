@@ -48,7 +48,7 @@ pip install astur
 ## Usage
 
 ```bash
-astur <FASTA_FILE or input_dir/ >
+astur <FASTA_FILE or input_dir/>
 ```
 
 - `-h` or `--help`    : show help message 🦅
@@ -99,7 +99,7 @@ astur -i test_data/ -t 3 --min-length 100 --max-length 1000000
 
 ### Output
 
-- stdout (if you need no header, use --no-header option)
+- stdout (if you need no header, use `--no-header` option)
 - TSV file (via `-o` or `--output`, optional)
 
 Default format columns: File, N_ARSC, C_ARSC, S_ARSC, AvgResMW <br>
