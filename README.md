@@ -57,7 +57,7 @@ astur <FASTA_FILE or input_dir/>
 - `-i` or `--input_dir` <input_dir/> : input file/directory path（`astur <input>` == `astur -i <input>` ）
 - `-o` or `--output`   <output_dir/> : output TSV file name (optional)
 - `-t` or `--threads` N : number of threads (default: 1)
-- `-s` or `--stats`     : output summary statistics to stdout (default: False)
+- `-s` or `--stats`     : output summary statistics to stderr (default: False)
 - `-p`, `--per-sequence`: process each sequence individually instead of the entire file
 
 - output format options
