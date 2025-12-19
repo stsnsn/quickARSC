@@ -15,6 +15,7 @@ Original citations for calculation metrics in Mende et al. 2017:
 
 
 import os
+import sys
 from Bio import SeqIO
 from collections import Counter
 
@@ -53,6 +54,11 @@ def compute_ARSC_extended_counts(counts, aa_dict):
     total_aa = sum(counts.values())
     if total_aa == 0:
         return None, None, None, None
+
+    # Detect and log ignored characters
+    ignored_chars = [a for a in counts if a not in aa_dict]
+    if ignored_chars:
+        print(f"Warning: Ignored characters found in sequence: {', '.join(set(ignored_chars))}", file=sys.stderr)
 
     total_N  = sum(counts[a] * aa_dict[a]["N"]  for a in counts if a in aa_dict)
     total_C  = sum(counts[a] * aa_dict[a]["C"]  for a in counts if a in aa_dict)
