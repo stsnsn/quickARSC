@@ -74,9 +74,10 @@ astur <FASTA_FILE or input_dir/>
 astur test_data/genome_a.faa
 ```
 - output example:
+
 | query | N_ARSC | C_ARSC | S_ARSC | AvgResMW |
 | --- | --- | --- | --- | --- |
-| genome_a | 内容2 | 内容3 | 内容1 | 内容2 |
+| genome_a | 0.148438 | 3.132812 | 0.023438 | 123.568566 |
 
 #### 2. Process all `.faa` / `.faa.gz` files in a directory using 3 threads and save results as `ARSC_output.tsv`.
 ```bash
