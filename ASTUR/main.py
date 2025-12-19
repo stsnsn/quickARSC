@@ -142,7 +142,7 @@ def main():
             print("="*70, file=sys.stderr)
             print(f"{'Metric':<12} {'Mean':<16} {'Stdev':<16} {'Min':<16} {'Max':<16}", file=sys.stderr)
             print("-"*70, file=sys.stderr)
-            for name, vals in [('N_ARSC', n_vals), ('C_ARSC', c_vals), ('S_ARSC', s_vals), ('MW_ARSC', mw_vals)]:
+            for name, vals in [('N_ARSC', n_vals), ('C_ARSC', c_vals), ('S_ARSC', s_vals), ('AvgResMW', mw_vals)]:
                 sd = stdev(vals) if len(vals) > 1 else 0
                 print(f"{name:<12} {mean(vals):<16.{args.decimal_places}f} {sd:<16.{args.decimal_places}f} {min(vals):<16.{args.decimal_places}f} {max(vals):<16.{args.decimal_places}f}", file=sys.stderr)
             print("-"*70, file=sys.stderr)
