@@ -91,7 +91,7 @@ arsc test_data/ -t 3 -as -o ARSC_output_full.tsv
 arsc test_data/ -t 3 --no-header | sort -k2,2nr
 ```
 
-#### 5. Process each sequence individually instead of the entire file and filter results by amino acid length > 65.
+#### 5. Process each sequence individually instead of the entire file and filter results by amino acid length >= 65.
 ```bash
 arsc test_data/ -t 3 --min-length 65 -p
 ```
