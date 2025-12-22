@@ -52,8 +52,7 @@ arsc <FASTA_FILE or input_dir/>
 - `-h` or `--help`    : show help message
 - `-v` or `--version` : show version
 
-- `-i` or `--input_dir` <input_dir/> : input file/directory path（`arsc <input>` == `arsc -i <input>` ）
-- `-o` or `--output`   <output_dir/> : output TSV file name (optional)
+- `-o` or `--output`   <output> : output TSV file name (optional)
 - `-t` or `--threads` N : number of threads (default: 1)
 - `-s` or `--stats`     : output summary statistics to stderr (default: False)
 - `-p`, `--per-sequence`: process each sequence individually instead of the entire file
@@ -89,12 +88,12 @@ arsc test_data/ -t 3 -as -o ARSC_output_full.tsv
 
 #### 4. Sort results by N-ARSC (descending) using pipe.
 ```bash
-arsc -i test_data/ -t 3 --no-header | sort -k2,2nr
+arsc test_data/ -t 3 --no-header | sort -k2,2nr
 ```
 
 #### 5. Process each sequence individually instead of the entire file and filter results by amino acid length > 130.
 ```bash
-arsc -i test_data/ -t 3 --min-length 130 -p
+arsc test_data/ -t 3 --min-length 130 -p
 ```
 
 ### Input requirements

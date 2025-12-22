@@ -38,8 +38,7 @@ class CustomFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaultsHe
 
 def main():
     parser = argparse.ArgumentParser(description=f"{quickARSC_LOGO}\n\nCompute ARSC from .faa/.faa.gz files", formatter_class=CustomFormatter)
-    parser.add_argument("-i", "--input_dir", help="Input file or directory")
-    parser.add_argument("input", nargs="?", help="Positional input: .faa/.faa.gz file or directory")
+    parser.add_argument("input", help="Positional input: .faa/.faa.gz file or directory")
     parser.add_argument("-p", "--per-sequence", action="store_true", help="Process each sequence individually")
     parser.add_argument("-a", "--aa-composition", action="store_true", help="Include amino acid composition ratios")
     parser.add_argument("-o", "--output", help="Output TSV file (default: stdout)")
@@ -57,7 +56,7 @@ def main():
     target_input = args.input_dir if args.input_dir else args.input
     if not target_input:
         parser.error("missing input: provide a .faa/.faa.gz file or directory")
-    
+
     if args.stats and not os.path.isdir(target_input):
         parser.error("--stats can only be used with directory input")
 
@@ -93,7 +92,7 @@ def main():
             if (args.min_length is not None and length < args.min_length) or (args.max_length is not None and length > args.max_length):
                 continue
             filtered_results.append(r)
-    
+
     results = filtered_results
     print(f"After filtering: {len(results)} results.", file=sys.stderr)
 

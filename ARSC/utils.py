@@ -41,9 +41,9 @@ def collect_faa_files(input_path):
             yield {"handle": input_path, "name": genome}
             return
         else:
-            raise ValueError(f"-i must be .faa or .faa.gz: {input_path}")
+            raise ValueError(f"input must be .faa or .faa.gz: {input_path}")
 
-    raise ValueError(f"-i path does not exist: {input_path}")
+    raise ValueError(f"input path does not exist: {input_path}")
 
 
 def process_faa_auto(item, per_sequence=False):
