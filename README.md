@@ -29,7 +29,7 @@ The static web interface is available at [https://stsnsn.github.io/quickARSC/](h
 The standalone package is available at [https://pypi.org/project/arsc/](https://pypi.org/project/arsc/)
 
 **Features**
-- **Elemental stoichiometry calculation**: Calculate N-, C-, and S-ARSC directly from protein FASTA files or directories.
+- **Elemental stoichiometry calculation**: Calculate N, C, and S-ARSC directly from protein FASTA files or directories.
 - **Multiprocessing**: Fast and scalable analysis of large genome or proteome datasets.
 - **Simple CLI tool**: Run with a single command; easy to integrate into UNIX pipelines.
 
