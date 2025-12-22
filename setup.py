@@ -18,6 +18,6 @@ setup(
     author="Satoshi Nishino",
     author_email="satoshi-nishino@g.ecc.u-tokyo.ac.jp",
     description="Compute ARSC (N/C/S) from protein fasta files",
-    url="https://github.com/stsnsn/ARSC",
+    url="https://github.com/stsnsn/quickARSC",
     license="GPL-2.0",
 )
