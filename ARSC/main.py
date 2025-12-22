@@ -18,9 +18,9 @@ import argparse
 import os
 from multiprocessing import Pool
 from statistics import mean, stdev
-from ASTUR import __version__
-from ASTUR.utils import collect_faa_files, process_faa_auto
-from ASTUR.core import aa_dictionary
+from ARSC import __version__
+from ARSC.utils import collect_faa_files, process_faa_auto
+from ARSC.core import aa_dictionary
 
 ASTUR_LOGO = """
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;+;;xx+X;;;;;;;;;
