@@ -49,7 +49,7 @@ pip install arsc
 arsc <FASTA_FILE or input_dir/>
 ```
 
-- `-h` or `--help`    : show help message 🦅
+- `-h` or `--help`    : show help message
 - `-v` or `--version` : show version
 
 - `-i` or `--input_dir` <input_dir/> : input file/directory path（`astur <input>` == `astur -i <input>` ）
