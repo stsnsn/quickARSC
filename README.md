@@ -46,7 +46,7 @@ pip install arsc
 ## Usage
 
 ```bash
-arsc <FASTA_FILE or input_dir/>
+arsc <FASTA_FILE (.faa / .faa.gz) or input_dir/>
 ```
 
 - `-h` or `--help`    : show help message
