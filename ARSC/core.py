@@ -78,7 +78,7 @@ def compute_aa_composition(counts):
     total_aa = sum(counts.values())
     if total_aa == 0:
         return {}
-    
+
     # Return composition for all amino acids in aa_dictionary
     composition = {}
     for aa in aa_dictionary.keys():

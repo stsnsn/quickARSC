@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="arsc",
-    version="0.5.0",
+    version="0.5.1",
     packages=find_packages(),
     install_requires=["biopython>=1.79"],
     long_description=long_description,
@@ -13,6 +13,7 @@ setup(
     entry_points={
         "console_scripts": [
             "arsc=ARSC.main:main",
+            'quickARSC=ARSC.main:main',
         ],
     },
     author="Satoshi Nishino",

@@ -46,17 +46,20 @@ pip install arsc
 ## Usage
 
 ```bash
-arsc <FASTA_FILE (.faa/.faa.gz) or input_dir/>
+quickARSC <FASTA_FILE(faa/faa.gz) or input_dir/>
 ```
+For consistency with the package name, the command `quickARSC` is now available. We also maintain `arsc` as a shorter command for faster typing.
+
+While we recommend providing protein FASTA files as input or explicitly using the `--nucleotide` flag, quickARSC automatically detects nucleotide sequences and uses predicted amino acid sequences (requiring [Prodigal](https://github.com/hyattpd/Prodigal) in your PATH) by default; this feature can be disabled with the `--no-auto-detection` flag.
 
 - `-h` or `--help`    : show help message
 - `-v` or `--version` : show version
-
 
 - `-o` or `--output`   <output> : output TSV file name (optional)
 - `-t` or `--threads` N : number of threads (default: 1)
 - `-s` or `--stats`     : output summary statistics to stderr (default: False)
 - `-p` or `--per-sequence`: process each sequence individually instead of the entire file
+- `--no-auto-detection`: Disable automatic nucleotide sequence detection (skip nucleotide-detected files) (default: False)
 
 - output format options
     - `-a` or `--aa-composition`   : Include amino acid composition ratios in output (default: False)
@@ -65,28 +68,28 @@ arsc <FASTA_FILE (.faa/.faa.gz) or input_dir/>
     - `--max-length` N : number of maximal amino acid length (default: None)
     - `--min-length` N : number of minimal amino acid length (default: None)
 
-- `-n` or `--nucleotide` : calculate GC content and ARSC values from nucleotide files (fna, fna.gz, fa, fa.gz, fasta, fasta.gz). Requires **Prodigal** to be installed in your PATH for gene prediction.
+- `-n` or `--nucleotide` : calculate GC content and ARSC values from nucleotide files (fna, fna.gz, fa, fa.gz, fasta, fasta.gz). Requires **[Prodigal](https://github.com/hyattpd/Prodigal)** to be installed in your PATH for gene prediction.
 
 
 ### Example
 #### 1. Compute ARSC values on a `.faa` file.
 ```bash
-arsc test_data/genome_a.faa
+quickARSC test_data/genome_a.faa
 ```
 - output example:
 
 | query | N_ARSC | C_ARSC | S_ARSC | AvgResMW | TotalLength |
 | --- | --- | --- | --- | --- | --- |
-| genome_a | 0.148438 | 3.132812 | 0.023438 | 123.568566 | 194 |
+| genome_a | 0.148438 | 3.132812 | 0.023438 | 123.568566 | 128 |
 
 #### 2. Process all `.faa` / `.faa.gz` files in a directory using 3 threads and save results as `ARSC_output.tsv`.
 ```bash
-arsc test_data/ -t 3 -o ARSC_output.tsv
+quickARSC test_data/ -t 5 -o ARSC_output.tsv
 ```
 
 #### 3. Output with amino acid composition table as `ARSC_output_full.tsv` and show statistics summary.
 ```bash
-arsc test_data/ -t 3 -as -o ARSC_output_full.tsv
+quickARSC test_data/ -t 5 -as -o ARSC_output_full.tsv
 ```
 
 #### 4. Sort results by N-ARSC (descending) using pipe.
@@ -99,7 +102,7 @@ arsc test_data/ -t 3 --no-header | sort -k2,2nr
 arsc test_data/ -t 3 --min-length 65 -p
 ```
 
-#### 6. Process nucleotide files (fna/fna.gz) and show base compositions and ARSC values. (Requires Prodigal)
+#### 6. Process nucleotide files (fna/fna.gz) and show base GC compositions and ARSC values. (Requires [Prodigal](https://github.com/hyattpd/Prodigal))
 ```bash
 arsc -n test_data/ -t 2 -d 2
 ```
@@ -113,7 +116,7 @@ arsc -n test_data/ -t 2 -d 2
 
 ### Input requirements
 
-- Input directory must contain one or more amino-acid fasta (`*.faa` or `*.faa.gz`) files
+- Input directory must contain one or morefasta (such as `.faa` or `.faa.gz`) files
 
 ### Output
 
@@ -134,6 +137,7 @@ Default format columns: query, N_ARSC, C_ARSC, S_ARSC, AvgResMW, TotalLenghth <b
 #### Optional Dependencies
 - **Prodigal** >= 2.6.3: Required only for nucleotide mode to perform gene prediction.
     - Must be installed and available in your system PATH for `-n` / `--nucleotide` option.
+    - [Available from here](https://github.com/hyattpd/Prodigal)
 ---
 
 ## Citation

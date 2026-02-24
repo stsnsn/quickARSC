@@ -19,7 +19,7 @@ import os
 from multiprocessing import Pool
 from statistics import mean, stdev
 from ARSC import __version__
-from ARSC.utils import collect_faa_files, process_faa_auto, collect_fna_files, process_fna_pipeline
+from ARSC.utils import collect_faa_files, process_faa_auto, collect_fna_files, process_fna_pipeline, detect_nucleotide_file, dispatch_process
 from ARSC.core import aa_dictionary
 
 quickARSC_LOGO = """
@@ -31,27 +31,34 @@ quickARSC_LOGO = """
  \__, |\__,_|_|\___|_|\_\/_/    \_\_|  \_\_____/ \_____|
     | |                                                 
     |_|                                                 
+          Compute ARSC (N/C/S) from FASTA files         
+    Usage: arsc [options] <input.faa or input_directory>
 """
 
 class CustomFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaultsHelpFormatter):
     pass
 
 def main():
-    parser = argparse.ArgumentParser(description=f"{quickARSC_LOGO}\n\nCompute ARSC from .faa/.faa.gz files", formatter_class=CustomFormatter)
-    parser.add_argument("input", help="Positional input: .faa/.faa.gz file or directory")
+    parser = argparse.ArgumentParser(description=f"{quickARSC_LOGO}\n\n", formatter_class=CustomFormatter)
+    parser.add_argument("input", help="Positional input: fasta file or directory")
     parser.add_argument("-p", "--per-sequence", action="store_true", help="Process each sequence individually")
     parser.add_argument("-a", "--aa-composition", action="store_true", help="Include amino acid composition ratios")
     parser.add_argument("-o", "--output", help="Output TSV file (default: stdout)")
+    parser.add_argument("-s", "--stats", action="store_true", help="Output summary statistics to stderr")
+    parser.add_argument("--no-auto-detection", action="store_true", help="Disable automatic nucleotide sequence detection (skip nucleotide-detected files)")
     parser.add_argument("--no-header", action="store_true", help="Suppress header line")
     parser.add_argument("-t", "--threads", default=1, type=int, help="Number of threads")
     parser.add_argument("-d", "--decimal-places", default=6, type=int, help="Decimal places")
     parser.add_argument("--min-length", type=int, help="Minimum sequence length")
     parser.add_argument("--max-length", type=int, help="Maximum sequence length")
-    parser.add_argument("-s", "--stats", action="store_true", help="Output summary statistics to stderr")
-    parser.add_argument("-n", "--nucleotide", action="store_true", help="Nucleotide mode for fna/fna.gz (please install Prodigal)")
+    parser.add_argument("-n", "--nucleotide", action="store_true", help="Nucleotide mode for calculate GC contents and ARSCs from fna/fna.gz (please install Prodigal)")
     parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
 
     args = parser.parse_args()
+
+    # NOTE: -n / --nucleotide option was commented out
+    if not hasattr(args, 'nucleotide'):
+        args.nucleotide = False
 
     # 入力パス
     target_input = args.input
@@ -63,21 +70,36 @@ def main():
 
     if args.nucleotide:
         items = list(collect_fna_files(args.input))
-        target_func = process_fna_pipeline
+        initial_mode = 'fna'
     else:
         items = list(collect_faa_files(args.input))
-        target_func = process_faa_auto
+        initial_mode = 'faa'
 
     print(f"quickARSC Version: {__version__}", file=sys.stderr)
     print(f"Found {len(items)} files to process.", file=sys.stderr)
     print(f"Using {args.threads} threads.", file=sys.stderr)
 
-    # 計算
+    # --- 各ファイルの処理モードを決め、並列で dispatch ---
+    task_args = []
+    if initial_mode == 'fna':
+        for item in items:
+            task_args.append((item, 'fna', args.per_sequence))
+    else:
+        for item in items:
+            handle = item.get('handle')
+            is_nuc = detect_nucleotide_file(handle)
+            if is_nuc:
+                if args.no_auto_detection:
+                    print(f"Skipping {item.get('name')} (looks like nucleotide sequence; --no-auto-detection set)", file=sys.stderr)
+                    continue
+                else:
+                    print(f"Warning: {item.get('name')} looks like nucleotide sequences — switching to nucleotide processing", file=sys.stderr)
+                    task_args.append((item, 'fna', args.per_sequence))
+            else:
+                task_args.append((item, 'faa', args.per_sequence))
+
     with Pool(args.threads) as pool:
-        if args.per_sequence:
-            results = pool.starmap(target_func, [(item, True) for item in items])
-        else:
-            results = pool.map(target_func, items)
+        results = pool.starmap(dispatch_process, task_args)
 
     # フィルタリング
     filtered_results = []
