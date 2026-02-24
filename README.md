@@ -116,7 +116,7 @@ arsc -n test_data/ -t 2 -d 2
 
 ### Input requirements
 
-- Input directory must contain one or morefasta (such as `.faa` or `.faa.gz`) files
+- Input directory must contain one or more fasta (such as `.faa` or `.faa.gz`) files
 
 ### Output
 
