@@ -12,11 +12,23 @@
 		<link rel="stylesheet" href="css/styles.css">
 	</head>
 	<body>
-		<header>
-			<h1>quickARSC: ARSC Viewer r226.0rep</h1>
-			<p class="lead">You can filter the pre-computed N, C, and S-ARSC data for GTDB r226.0 representative species by taxonomic levels and download the filtered dataset as a TSV file.<br>
-                Optional: If you upload an amino acid FASTA file (.fa, .faa, .fasta), the plot will display the N, C, and S-ARSC values for the uploaded protein/proteome.</p>
-		</header>
+        <header>
+            <h1>quickARSC: ARSC Viewer r226.0rep</h1>
+            <div class="description-box">
+                <p class="lead">
+                <strong>Profiling Elemental Stoichiometry of Proteomes:</strong><br>
+                The ARSC quantifies the average number of each atom (N, C, S) in amino acid side chains.
+                These values serve as ecological proxies, reflecting how proteomes adapt to nutrient availability and metabolic constraints.
+                </p>
+                <ul class="features-list">
+                    <li><strong>Visualize & Filter:</strong> Display N, C, and S-ARSC across the GTDB r226.0 representative species. Use the dropdown to switch elements.</li>
+                    <li><strong>Interactive Plot:</strong> Hover over points for taxonomy details; click to display information in a selectable text box for easy copying.</li>
+                    <li><strong>Comparative Analysis:</strong> Upload your own amino acid FASTA to see where your proteome sits relative to the reference.</li>
+                    <li><strong>Download:</strong> Filter data by taxonomic levels and export the results as a TSV file.</li>
+                </ul>
+                <p class="wiki-link">For detailed interpretation, visit our <a href="https://github.com/stsnsn/quickARSC/wiki" target="_blank">GitHub Wiki</a>.</p>
+            </div>
+        </header>
 
 		<!-- Prominent Y-axis selector placed above other filters -->
         <!-- user FASTA upload (single genome) -->
