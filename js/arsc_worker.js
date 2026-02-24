@@ -118,6 +118,7 @@ onmessage = function(ev) {
   try {
     const text = msg.text || '';
     const res = parseFASTAandComputeFast(text);
+    // Use underscore keys to match main thread expectations (N_ARSC, C_ARSC, S_ARSC)
     postMessage({ type: 'result', filename: msg.filename || 'uploaded', N_ARSC: res.N_ARSC, C_ARSC: res.C_ARSC, S_ARSC: res.S_ARSC, warning: res.warning });
   } catch (err) {
     postMessage({ type: 'error', message: err.message || String(err) });

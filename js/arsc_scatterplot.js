@@ -108,7 +108,7 @@ function addUserSampleOverlay() {
 		const line = { type: 'line', xref: 'paper', x0: 0, x1: 1, yref: 'y', y0: yValCur, y1: yValCur, line: { color: 'red', width: 2 }, _userSample: true };
 		Plotly.relayout('plot', { shapes: existingShapes.concat([line]) });
 		const existingAnns = (gd.layout && gd.layout.annotations) ? gd.layout.annotations.slice() : [];
-		const ann = { xref: 'paper', x: 0.99, xanchor: 'right', yref: 'y', y: yValCur, text: `${userSample.filename} — ${yFieldCur}: ${yValCur.toFixed(5)}`, bgcolor: '#fff8', bordercolor: '#ff3333', font: { color: '#800', size: 12 }, _userSample: true };
+		const ann = { xref: 'paper', x: 0.99, xanchor: 'right', yref: 'y', y: yValCur, text: `${userSample.filename} — ${displayLabel(yFieldCur)}: ${yValCur.toFixed(5)}`, bgcolor: '#fff8', bordercolor: '#ff3333', font: { color: '#800', size: 12 }, _userSample: true };
 		Plotly.relayout('plot', { annotations: existingAnns.concat([ann]) });
 	} catch (e) { console.warn(e); }
 }
@@ -217,6 +217,19 @@ if (markerSizeInput && markerSizeVal) {
 let rows = []; // parsed data
 let header = []; // TSV header
 
+// Display label mapping for ARSC fields
+function displayLabel(field) {
+	if (!field) return field;
+	const map = {
+		'N_ARSC': 'N-ARSC',
+		'C_ARSC': 'C-ARSC',
+		'S_ARSC': 'S-ARSC',
+		'AvgResMW': 'AvgResMW',
+		'GC(%)': 'GC(%)'
+	};
+	return map[field] || field;
+}
+
 // Utility: parse TSV to objects
 function parseTSV(text) {
 	const lines = text.split('\n').filter(l => l.trim() !== '');
@@ -311,7 +324,7 @@ function getFilters() {
 					const taxLevels = ['phylum','class','order','family','genus'];
 					const taxHtml = taxLevels.map(t => (r[t] ? `${t}: ${r[t]}` : null)).filter(Boolean).join('<br>');
 					const idLine = r['id'] ? `id: ${r['id']}` : '';
-					const valLine = `${xField}: ${r[xField]}, ${yField}: ${r[yField]}`;
+					const valLine = `${xField}: ${r[xField]}, ${displayLabel(yField)}: ${r[yField]}`;
 					groups[key].text.push(`${idLine}<br>${taxHtml}<br>${valLine}`);
 					// marker size: use size from slider control (fallback to 8)
 					const s = (markerSizeInput && markerSizeInput.value) ? parseInt(markerSizeInput.value) : 8;
@@ -331,9 +344,9 @@ function getFilters() {
 				}));
 
 				const layout = {
-				title: yField + ' vs ' + xField + ' (color: ' + groupingLevel + ')',
+				title: displayLabel(yField) + ' vs ' + xField + ' (color: ' + groupingLevel + ')',
 				xaxis: { title: xField },
-				yaxis: { title: yField },
+				yaxis: { title: displayLabel(yField) },
 				hovermode: 'closest',
 				// place legend horizontally centered below the plot area
 				legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.18 },
