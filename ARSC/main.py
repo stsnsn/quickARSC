@@ -90,8 +90,9 @@ def main():
             is_nuc = detect_nucleotide_file(handle)
             if is_nuc:
                 if args.no_auto_detection:
-                    print(f"Skipping {item.get('name')} (looks like nucleotide sequence; --no-auto-detection set)", file=sys.stderr)
-                    continue
+                    # User requested to disable auto-detection: treat everything as amino-acid sequences
+                    print(f"Note: {item.get('name')} looks like nucleotide sequences but --no-auto-detection set; treating as protein.", file=sys.stderr)
+                    task_args.append((item, 'faa', args.per_sequence))
                 else:
                     print(f"Warning: {item.get('name')} looks like nucleotide sequences — switching to nucleotide processing", file=sys.stderr)
                     task_args.append((item, 'fna', args.per_sequence))

@@ -11,6 +11,7 @@
 These metrics follow the definitions used in
 Mende et al., *Nature Microbiology*, (2017). https://doi.org/10.1038/s41564-017-0008-3
 
+For more details, please visit [our wiki](https://github.com/stsnsn/quickARSC/wiki).
 ---
 
 ## Web Interface
@@ -59,7 +60,7 @@ While we recommend providing protein FASTA files as input or explicitly using th
 - `-t` or `--threads` N : number of threads (default: 1)
 - `-s` or `--stats`     : output summary statistics to stderr (default: False)
 - `-p` or `--per-sequence`: process each sequence individually instead of the entire file
-- `--no-auto-detection`: Disable automatic nucleotide sequence detection (skip nucleotide-detected files) (default: False)
+- `--no-auto-detection`: Disable automatic sequence type detection and treat all inputs as amino acids (default: False)
 
 - output format options
     - `-a` or `--aa-composition`   : Include amino acid composition ratios in output (default: False)
@@ -116,7 +117,8 @@ arsc -n test_data/ -t 2 -d 2
 
 ### Input requirements
 
-- Input directory must contain one or more fasta (such as `.faa` or `.faa.gz`) files
+- Input directory must contain one or more fasta files
+    - `.faa`, `.faa.gz`, `.fna`, `.fna.gz`, `.fa`, `.fa.gz`, `.fasta`, `.fasta.gz`
 
 ### Output
 
@@ -131,13 +133,14 @@ Default format columns: query, N_ARSC, C_ARSC, S_ARSC, AvgResMW, TotalLenghth <b
 - TotalLenghth — Total amino acid length.
 
 ### Dependencies
+#### Core Dependencies (Required)
 - **Python** >= 3.8
 - **Biopython** >= 1.79
+    - For a minimal setup without Prodigal, use the `--no-auto-detection` flag with amino acid inputs.
 
 #### Optional Dependencies
-- **Prodigal** >= 2.6.3: Required only for nucleotide mode to perform gene prediction.
-    - Must be installed and available in your system PATH for `-n` / `--nucleotide` option.
-    - [Available from here](https://github.com/hyattpd/Prodigal)
+- **[Prodigal](https://github.com/hyattpd/Prodigal)** >= 2.6.3: Required only for nucleotide mode to perform gene prediction.
+    - Must be installed and available in your system PATH for nucleotide inputs.
 ---
 
 ## Citation
