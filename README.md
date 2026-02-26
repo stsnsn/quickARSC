@@ -6,7 +6,7 @@
 
 ---
 
-**quickARSC** is [a lightweight command-line tool](https://pypi.org/project/arsc/) and [a web interface](https://stsnsn.github.io/quickARSC/) for quantifying elemental stoichiometry from protein FASTA files. It calculates the number of nitrogen (N), carbon (C), and sulfur (S) atoms per amino acid residue side chain (ARSC) across proteins or proteomes.
+**quickARSC** is [a lightweight command-line tool](https://pypi.org/project/arsc/) and [a web interface](https://stsnsn.github.io/quickARSC/) for quantifying elemental stoichiometry from FASTA files. It calculates the number of nitrogen (N), carbon (C), and sulfur (S) atoms per amino acid residue side chain (ARSC) across proteins or proteomes.
 
 These metrics follow the definitions used in
 [Mende et al., *Nature Microbiology*, (2017).](https://doi.org/10.1038/s41564-017-0008-3)
