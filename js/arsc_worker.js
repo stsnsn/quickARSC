@@ -89,7 +89,7 @@ function parseFASTAandComputeFast(text) {
   // nucleotide-detection: if >=98% of valid characters are A/T/G/C/U/N, treat as likely nucleotide sequence
   if (validCharCount > 0) {
     const ratio = nucleotideMatchCount / validCharCount;
-    if (ratio > 0.98) {
+    if (ratio > 0.95) {
       warning = {
         type: 'nucleotide_detected',
         message: 'Caution: The input appears to be DNA/RNA (mostly A,T,G,C,U or N). This tool expects amino-acid sequences; results may be meaningless.'
