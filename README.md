@@ -146,7 +146,7 @@ Default format columns: query, N_ARSC, C_ARSC, S_ARSC, AvgResMW, TotalLenghth <b
 
 ## Citation
 Please cite following articles:
-- (To be added)
+- Nishino et al., *Microbiology Resource Announcement*, (2026). https://doi.org/10.1128/mra.00031-26
 - Mende et al., *Nature Microbiology*, (2017). https://doi.org/10.1038/s41564-017-0008-3
 
 ---
