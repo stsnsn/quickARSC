@@ -101,7 +101,7 @@ def process_faa(faa_source, name=None, per_sequence=False):
         if per_sequence:
             results = []
             # enumerateを使って、1番から順に番号を振る
-            for i, record in enumerate(SeqIO.parse(faa_source, "fasta-blast"), 1):
+            for i, record in enumerate(SeqIO.parse(faa_source, "fasta"), 1):
                 seq = str(record.seq).upper().replace("*", "")
                 seq_counts = Counter(seq)
                 seq_length = sum(seq_counts.values())
@@ -122,7 +122,7 @@ def process_faa(faa_source, name=None, per_sequence=False):
             return {"genome": genome_name, "sequences": results}
         else:
             counts = Counter()
-            for record in SeqIO.parse(faa_source, "fasta-blast"):
+            for record in SeqIO.parse(faa_source, "fasta"):
                 seq = str(record.seq).upper().replace("*", "")
                 counts.update(seq)
 
