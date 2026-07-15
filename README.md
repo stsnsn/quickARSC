@@ -61,7 +61,7 @@ While we recommend providing protein FASTA files as input or explicitly using th
 - `-t` or `--threads` N : number of threads (default: 1)
 - `-s` or `--stats`     : output summary statistics to stderr (default: False)
 - `-p` or `--per-sequence`: process each sequence individually instead of the entire file
-- `--no-auto-detection`: Disable automatic sequence type detection and treat all inputs as amino acids (default: False)
+- `--no-auto-detection`: Treat input files as amino-acid FASTA and skip nucleotide auto-detection (default: False)
 
 - output format options
     - `-a` or `--aa-composition`   : Include amino acid composition ratios in output (default: False)
