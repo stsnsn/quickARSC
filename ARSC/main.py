@@ -45,7 +45,7 @@ def main():
     parser.add_argument("-a", "--aa-composition", action="store_true", help="Include amino acid composition ratios")
     parser.add_argument("-o", "--output", help="Output TSV file (default: stdout)")
     parser.add_argument("-s", "--stats", action="store_true", help="Output summary statistics to stderr")
-    parser.add_argument("--no-auto-detection", action="store_true", help="Disable automatic nucleotide sequence detection (skip nucleotide-detected files)")
+    parser.add_argument("--no-auto-detection", action="store_true", help="Treat input files as amino-acid FASTA and skip nucleotide auto-detection")
     parser.add_argument("--no-header", action="store_true", help="Suppress header line")
     parser.add_argument("-t", "--threads", default=1, type=int, help="Number of threads")
     parser.add_argument("-d", "--decimal-places", default=6, type=int, help="Decimal places")
