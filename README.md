@@ -1,7 +1,9 @@
 # quickARSC: ARSC-based stoichiometry utility
 
 [![PyPI version](https://badge.fury.io/py/arsc.svg)](https://badge.fury.io/py/arsc)
+[![Anaconda.org](https://anaconda.org/stsnsn/arsc/badges/version.svg)](https://anaconda.org/channels/stsnsn/packages/arsc/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17977582.svg)](https://doi.org/10.5281/zenodo.17977582)
+[![license](https://anaconda.org/stsnsn/arsc/badges/license.svg)](https://github.com/stsnsn/quickARSC#license)
 
 
 ---
@@ -45,17 +47,9 @@ pip install arsc
 
 ### Installation From Anaconda.org
 
-Until the package is available from Bioconda, install the personal-channel
-build together with its dependencies from conda-forge and bioconda:
-
 ```bash
-conda create -n quickarsc \
-  --override-channels \
-  -c stsnsn \
-  -c conda-forge \
-  -c bioconda \
-  --strict-channel-priority \
-  arsc=0.5.3
+conda create -n quickarsc -c stsnsn -c bioconda arsc
+conda activate arsc
 ```
 
 ---
