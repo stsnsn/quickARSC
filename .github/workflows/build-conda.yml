@@ -1,0 +1,128 @@
+name: Build and publish Conda package
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Upload the tested package to Anaconda.org
+        required: true
+        default: false
+        type: boolean
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Verify tag matches recipe version
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          recipe_version="$(python - <<'PY'
+          from pathlib import Path
+          import re
+
+          text = Path("conda-recipe/meta.yaml").read_text(encoding="utf-8")
+          match = re.search(
+              r'^\{%\s*set\s+version\s*=\s*"([^"]+)"\s*%\}$',
+              text,
+              re.MULTILINE,
+          )
+          if match is None:
+              raise SystemExit("Could not read recipe version")
+          print(match.group(1))
+          PY
+          )"
+          test -n "$recipe_version"
+          test "$RELEASE_TAG" = "v${recipe_version}"
+
+      - name: Set up Miniforge
+        uses: conda-incubator/setup-miniconda@v4
+        with:
+          miniforge-version: latest
+          activate-environment: conda-build
+          auto-update-conda: true
+          channels: conda-forge,bioconda
+          channel-priority: strict
+          conda-remove-defaults: "true"
+
+      - name: Install build tools
+        run: |
+          conda install -y \
+            --override-channels \
+            -c conda-forge \
+            -c bioconda \
+            conda-build \
+            anaconda-client
+
+      - name: Build and test package
+        run: |
+          conda-build conda-recipe \
+            --override-channels \
+            -c conda-forge \
+            -c bioconda \
+            --output-folder "$GITHUB_WORKSPACE/conda-bld"
+
+      - name: Locate built package
+        id: package
+        run: |
+          mapfile -d '' package_files < <(
+            find "$GITHUB_WORKSPACE/conda-bld" -type f \
+              \( -name 'arsc-*.conda' -o -name 'arsc-*.tar.bz2' \) \
+              -print0
+          )
+          if [ "${#package_files[@]}" -ne 1 ]; then
+            printf 'Expected one package, found %s\n' "${#package_files[@]}" >&2
+            printf '%s\n' "${package_files[@]}" >&2
+            exit 1
+          fi
+          printf 'path=%s\n' "${package_files[0]}" >> "$GITHUB_OUTPUT"
+
+      - name: Install and smoke-test built package
+        run: |
+          conda create -y -n quickarsc-test \
+            --override-channels \
+            -c "file://$GITHUB_WORKSPACE/conda-bld" \
+            -c conda-forge \
+            -c bioconda \
+            --strict-channel-priority \
+            arsc=0.5.3
+          conda run -n quickarsc-test python -m pip check
+          conda run -n quickarsc-test python -c \
+            'import ARSC; assert ARSC.__version__ == "0.5.3"'
+          conda run -n quickarsc-test arsc --version
+          conda run -n quickarsc-test quickARSC --version
+          conda run -n quickarsc-test prodigal -v
+          conda run -n quickarsc-test arsc \
+            "$GITHUB_WORKSPACE/test_data/genome_a.faa" \
+            --no-auto-detection \
+            -o "$RUNNER_TEMP/quickarsc-faa.tsv"
+          conda run -n quickarsc-test arsc \
+            "$GITHUB_WORKSPACE/test_data/pSAR12.fna.gz" \
+            --nucleotide \
+            -o "$RUNNER_TEMP/quickarsc-fna.tsv"
+          test -s "$RUNNER_TEMP/quickarsc-faa.tsv"
+          test -s "$RUNNER_TEMP/quickarsc-fna.tsv"
+
+      - name: Upload to Anaconda.org
+        if: >-
+          startsWith(github.ref, 'refs/tags/') ||
+          (github.event_name == 'workflow_dispatch' && inputs.publish)
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        run: |
+          test -n "$ANACONDA_API_TOKEN"
+          anaconda upload --user stsnsn "${{ steps.package.outputs.path }}"

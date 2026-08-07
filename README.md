@@ -43,6 +43,21 @@ The standalone package is available at [https://pypi.org/project/arsc/](https://
 pip install arsc
 ```
 
+### Installation From Anaconda.org
+
+Until the package is available from Bioconda, install the personal-channel
+build together with its dependencies from conda-forge and bioconda:
+
+```bash
+conda create -n quickarsc \
+  --override-channels \
+  -c stsnsn \
+  -c conda-forge \
+  -c bioconda \
+  --strict-channel-priority \
+  arsc=0.5.3
+```
+
 ---
 
 ## Usage

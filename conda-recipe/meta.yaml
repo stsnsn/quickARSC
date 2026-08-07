@@ -1,0 +1,50 @@
+{% set name = "arsc" %}
+{% set version = "0.5.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/a/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 9963bd5e3a2a13f15fe1de9ebebf576139b9773df1bafc9d2311a6a3f6a6bf23
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - arsc = ARSC.main:main
+    - quickARSC = ARSC.main:main
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - biopython >=1.79
+    - prodigal >=2.6.3
+
+test:
+  imports:
+    - ARSC
+  commands:
+    - pip check
+    - arsc --version
+    - quickARSC --version
+    - arsc --help
+    - prodigal -v
+  requires:
+    - pip
+
+about:
+  home: https://github.com/stsnsn/quickARSC
+  license: GPL-2.0-only
+  license_file: LICENSE
+  summary: Compute ARSC (N/C/S) from protein FASTA files
+
+extra:
+  recipe-maintainers:
+    - stsnsn
