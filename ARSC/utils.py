@@ -19,7 +19,6 @@ import sys
 from ARSC.core import process_faa
 from collections import Counter
 from Bio import SeqIO
-from Bio.SeqUtils import gc_fraction
 
 
 # Remove extensions
