@@ -2,6 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/arsc.svg)](https://badge.fury.io/py/arsc)
 [![Anaconda.org](https://anaconda.org/stsnsn/arsc/badges/version.svg)](https://anaconda.org/channels/stsnsn/packages/arsc/)
+[![Platforms](https://anaconda.org/stsnsn/arsc/badges/platforms.svg)](https://anaconda.org/stsnsn/arsc/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17977582.svg)](https://doi.org/10.5281/zenodo.17977582)
 [![license](https://anaconda.org/stsnsn/arsc/badges/license.svg)](https://github.com/stsnsn/quickARSC#license)
 
