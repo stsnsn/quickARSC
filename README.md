@@ -49,7 +49,7 @@ pip install arsc
 
 ```bash
 conda create -n quickarsc -c stsnsn -c conda-forge -c bioconda arsc
-conda activate arsc
+conda activate quickarsc
 ```
 
 ---
