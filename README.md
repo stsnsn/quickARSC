@@ -48,7 +48,7 @@ pip install arsc
 ### Installation From Anaconda.org
 
 ```bash
-conda create -n quickarsc -c stsnsn -c conda-forge -c bioconda arsc
+conda create -n quickarsc -c conda-forge -c bioconda arsc
 conda activate quickarsc
 ```
 
