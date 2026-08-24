@@ -1,8 +1,8 @@
 # quickARSC: ARSC-based stoichiometry utility
 
 [![PyPI version](https://badge.fury.io/py/arsc.svg)](https://badge.fury.io/py/arsc)
-[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/arsc/README.html)
-[![Anaconda.org](https://anaconda.org/stsnsn/arsc/badges/version.svg)](https://anaconda.org/channels/stsnsn/packages/arsc/overview)
+[![bioconda](https://anaconda.org/bioconda/arsc/badges/downloads.svg)](http://bioconda.github.io/recipes/arsc/README.html)
+[![Anaconda.org](https://anaconda.org/stsnsn/arsc/badges/version.svg)](https://anaconda.org/bioconda/arsc/manage)
 [![Platforms](https://anaconda.org/stsnsn/arsc/badges/platforms.svg)](https://anaconda.org/channels/stsnsn/packages/arsc/overview)
 [![license](https://anaconda.org/stsnsn/arsc/badges/license.svg)](https://github.com/stsnsn/quickARSC#license)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17977582.svg)](https://doi.org/10.5281/zenodo.17977582)
