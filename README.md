@@ -40,13 +40,13 @@ The standalone package is available at [https://pypi.org/project/arsc/](https://
 
 ---
 
-### Installation From PyPI
+### Installation from PyPI
 
 ```bash
 pip install arsc
 ```
 
-### Installation From Anaconda.org
+### Installation from Bioconda
 
 ```bash
 conda create -n quickarsc -c conda-forge -c bioconda arsc
